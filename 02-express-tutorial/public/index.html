@@ -1,0 +1,51 @@
+<html>
+    <head>
+        <title>Week 3 Assignment</title>
+    </head>
+    <body>
+        <h1>Products Home Page</h1>
+
+        <button id="getProducts">Get All Products</button>
+
+        <div id="productsList"></div>
+
+    <script>
+
+        const getProducts = document.getElementById('getProducts')
+        const productsList = document.getElementById('productsList')
+
+        getProducts.addEventListener('click', async () => {
+            try {
+                
+                const response = await fetch('/api/v1/products')
+
+                if(!response.ok) {
+                    throw new Error('Failed to fetch products')
+                }
+
+                const data = await response.json()
+
+                displayProducts(data)
+                console.log(data)
+            } catch (error) {
+                console.log(error)
+            }
+        })
+
+        function displayProducts(products) {
+            productsList.innerHTML = ''
+
+            products.forEach((product) => {
+                const productElement = document.createElement('div')
+                productElement.innerHTML = `
+                    <h3>Name: ${product.name}</h3>
+                    <img src="${product.image}" alt="image of ${product.name}" />
+                    <p>Price: ${product.price}</p>
+                    <p>Description: ${product.desc}
+                `
+                productsList.appendChild(productElement)
+            })
+        }
+    </script>
+    </body>
+</html>
