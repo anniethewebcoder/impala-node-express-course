@@ -13,6 +13,8 @@ const { products } = require("./data");
 
 // app.use(express.static("./public"));
 
+app.get("/", logger, (req, res) => {});
+
 app.get("/api/v1/test", (req, res) => {
   res.json({
     message: "It worked!",
