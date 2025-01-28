@@ -9,11 +9,11 @@ app.use(express.json());
 
 // app.use([logger, authorize]);
 
-const { products } = require("./data");
+const { products, people } = require("./data");
+const { addPerson, getPeople } = require("./controllers/people")
+app.use(express.static("./methods-public"));
 
-// app.use(express.static("./public"));
 
-app.get("/", logger, (req, res) => {});
 
 app.get("/api/v1/test", (req, res) => {
   res.json({
