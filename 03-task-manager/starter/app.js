@@ -1,4 +1,4 @@
-require('./db/connect')
+require("./db/connect");
 
 const express = require("express");
 const app = express();
@@ -14,4 +14,11 @@ app.use("/api/v1/tasks", tasks);
 
 const port = 3000;
 
-app.listen(port, console.log(`Server is listening on port ${port}`));
+const start = async () => {
+  try {
+    await connectDB();
+    app.listen(port, console.log(`Server is listening on port ${port}`));
+  } catch (error) {}
+};
+
+start();
