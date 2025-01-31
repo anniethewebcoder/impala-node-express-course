@@ -1,71 +1,86 @@
-const express = require('express')
-const app = express()
+const express = require("express");
+const app = express();
 
-const { products } = require('./data') 
+const people = require('./routes/people')
+const auth = require('./routes/auth')
 
-app.use(express.static('./public'))
+app.use(express.static("./methods-public"));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
-app.get('/api/v1/test', (req, res) => {
-    res.json({
-        message: "It worked!"
-    })
-})
+app.use('/api/v1/people', people)
+app.use('/login', auth)
 
-app.get('/api/v1/products', (req, res) => {
-    const newProducts = products.map((p) => {
-        const { id, name, image, price, desc } = p
-        return { id, name, image, price, desc}
-    })
+// app.use(express.static("./public"));
+// const logger = require('./logger)
+// const authorize = require('./authorize')
 
-    res.json(newProducts)
-})
+app.get("/api/v1/test", (req, res) => {
+  res.json({
+    message: "It worked!",
+  });
+});
 
-app.get('/api/v1/products/:productID', (req, res) => {
-    const idToFind = parseInt(req.params.productID)
-    const product = products.find((p) => p.id === idToFind)
+app.get("/api/v1/products", (req, res) => {
+  const newProducts = products.map((p) => {
+    const { id, name, image, price, desc } = p;
+    return { id, name, image, price, desc };
+  });
 
-    if(!product) {
-        return res.status(404).json({
-            message: 'That product was not found.'
-        })
-    }
+  res.json(newProducts);
+});
 
-    res.json(product)
-})
+app.get("/api/v1/products/:productID", (req, res) => {
+  const idToFind = parseInt(req.params.productID);
+  const product = products.find((p) => p.id === idToFind);
 
-app.get('/api/v1/query', (req, res) => {
-    const { search, limit, price } = req.query
-    let sortedProducts = [...products]
+  if (!product) {
+    return res.status(404).json({
+      message: "That product was not found.",
+    });
+  }
 
-    if(search) {
-        sortedProducts = sortedProducts.filter((p) => {
-            return p.name.startsWith(search)
-        })
-    }
+  res.json(product);
+});
 
-    if(limit) {
-        sortedProducts = sortedProducts.slice(0, Number(limit))
-    }
+app.get("/api/v1/query", (req, res) => {
+  const { search, limit, price } = req.query;
+  let sortedProducts = [...products];
 
-    if(price) {
-        sortedProducts = sortedProducts.filter((p) => p.price <= price)
-    }
+  if (search) {
+    sortedProducts = sortedProducts.filter((p) => {
+      return p.name.startsWith(search);
+    });
+  }
 
-    if(sortedProducts < 1) {
-        return res.status(200).json({
-            message: 'No products matched your search.',
-            success: true,
-            data: []
-        })
-    }
+  if (limit) {
+    sortedProducts = sortedProducts.slice(0, Number(limit));
+  }
 
-    res.status(200).json(sortedProducts)
-})
+  if (price) {
+    sortedProducts = sortedProducts.filter((p) => p.price <= price);
+  }
 
+  if (sortedProducts < 1) {
+    return res.status(200).json({
+      message: "No products matched your search.",
+      success: true,
+      data: [],
+    });
+  }
 
-app.all('*', (req, res) => {
-    res.status(404).send('Page Not Found')
-})
+  res.status(200).json(sortedProducts);
+});
+
+// app.get("/api/items", [logger, authorize], (req, res) => {
+//   console.log(req.user);
+//   res.send("Items");
+// });
+
+app.all("*", (req, res) => {
+  res.status(404).send("Page Not Found");
+});
+
 app.listen(3000, () => {
-    console.log('Server is listening on port 3000...')
-})
+  console.log("Server is listening on port 3000...");
+});
